@@ -5,6 +5,10 @@ inputs:
     description: what env to setup for
     default: dev
     required: false
+  nodeVersion:
+    description: node version
+    default: 18.12.1
+    required: false
   npmToken:
     description: npm token
     required: true
@@ -77,8 +81,8 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: '18.4.0'
-        cache: 'yarn'
+        node-version: ${{ inputs.nodeVersion }}
+        cache: yarn
     - name: Auth into NPM
       run: echo "//registry.npmjs.org/:_authToken=${{ inputs.npmToken }}" >> ~/.npmrc
     - name: Install dependencies
