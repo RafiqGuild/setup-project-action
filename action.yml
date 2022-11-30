@@ -75,7 +75,7 @@ runs:
       with:
         aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
     - name: Checkout project
       uses: actions/checkout@v3
     - name: Setup Node
