@@ -1,0 +1,85 @@
+name: setup-env
+description: injects the correct env vars to deploy cdk
+inputs:
+  environment:
+    description: what env to setup for
+    default: dev
+    required: false
+  npmToken:
+    description: npm token
+    required: true
+  devAccountId:
+    description: dev aws id
+    required: true
+  stagingAccountId:
+    description: staging aws id
+    required: true
+  prodAccountId:
+    description: prod aws id
+    required: true
+  devAccessKey:
+    description: dev aws access key
+    required: true
+  stagingAccessKey:
+    description: staging aws access key
+    required: true
+  prodAccessKey:
+    description: prod aws access key
+    required: true
+  devSecretKey:
+    description: dev aws secret key
+    required: true
+  stagingSecretKey:
+    description: staging aws secret key
+    required: true
+  prodSecretKey:
+    description: prod aws secret key
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: setup-env
+      shell: bash
+      run: |
+        if [ ${{ inputs.environment }} = "dev" ]; then
+          STAGE=dev
+          NODE_ENV=dev
+          AWS_ACCOUNT_ID=${{ inputs.devAccountId }}
+          AWS_ACCESS_KEY_ID=${{ inputs.devAccessKey }}
+          AWS_SECRET_ACCESS_KEY=${{ inputs.devSecretKey }}
+        elif [ ${{ inputs.environment }} = "staging" ]; then
+          STAGE=staging
+          NODE_ENV=staging
+          AWS_ACCOUNT_ID=${{ inputs.stagingAccountId }}
+          AWS_ACCESS_KEY_ID=${{ inputs.stagingAccessKey }}
+          AWS_SECRET_ACCESS_KEY=${{ inputs.stagingSecretKey }}
+        elif [ ${{ inputs.environment }} = "prod" ]; then
+          STAGE=prod
+          NODE_ENV=prod
+          AWS_ACCOUNT_ID=${{ inputs.prodAccountId }}
+          AWS_ACCESS_KEY_ID=${{ inputs.prodAccessKey }}
+          AWS_SECRET_ACCESS_KEY=${{ inputs.prodSecretKey }}
+        fi
+
+        echo "STAGE=$STAGE" >> $GITHUB_ENV
+        echo "NODE_ENV=$NODE_ENV" >> $GITHUB_ENV
+        echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
+        echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    - name: Checkout project
+      uses: actions/checkout@v3
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.4.0'
+        cache: 'yarn'
+    - name: Auth into NPM
+      run: echo "//registry.npmjs.org/:_authToken=${{ inputs.npmToken }}" >> ~/.npmrc
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile --immutable
