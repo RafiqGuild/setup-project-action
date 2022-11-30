@@ -84,6 +84,8 @@ runs:
         node-version: ${{ inputs.nodeVersion }}
         cache: yarn
     - name: Auth into NPM
+      shell: bash
       run: echo "//registry.npmjs.org/:_authToken=${{ inputs.npmToken }}" >> ~/.npmrc
     - name: Install dependencies
+      shell: bash
       run: yarn install --frozen-lockfile --immutable
