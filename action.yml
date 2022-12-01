@@ -14,13 +14,13 @@ inputs:
     required: true
   devAccountId:
     description: dev aws id
-    required: true
+    required: false
   stagingAccountId:
     description: staging aws id
-    required: true
+    required: false
   prodAccountId:
     description: prod aws id
-    required: true
+    required: false
   devAccessKey:
     description: dev aws access key
     required: true
