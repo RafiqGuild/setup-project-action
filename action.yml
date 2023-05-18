@@ -39,6 +39,10 @@ inputs:
   prodSecretKey:
     description: prod aws secret key
     required: true
+  githubBranchRefOverride:
+    description: github branch ref to override when checking out
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -78,6 +82,8 @@ runs:
         aws-region: ${{ env.AWS_REGION }}
     - name: Checkout project
       uses: actions/checkout@v3
+      with:
+          ref: ${{ inputs.githubBranchRefOverride }}
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
